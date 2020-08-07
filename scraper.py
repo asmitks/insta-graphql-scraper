@@ -5,15 +5,16 @@ from metros import metro
 import dateToId
 import os
 path='gdrive/My Drive/insta_data/'
-def pull_json(end_cursor):
-    try:
-        URL='https://www.instagram.com/explore/locations/204517928/chicago-illinois/?__a=1&max_id='+end_cursor
-        r = requests.get(url = URL) 
-        data = r.json() 
-        data=data['graphql']['location']['edge_location_to_media']
-        return data
-    except:
-        return None
+def pull_json(end_cursor,location):
+	try:
+		loc_id=metro[location]
+		URL='https://www.instagram.com/explore/locations/'+loc_id+'/'+location+'/?__a=1&max_id='+end_cursor
+		r = requests.get(url = URL) 
+		data = r.json() 
+		data=data['graphql']['location']['edge_location_to_media']
+		return data
+	except:
+		return None
 
     
 def main(argv):
@@ -44,7 +45,7 @@ def main(argv):
     ctr=0
     while(end_cursor and wrong<20 and end_cursor>maxid2):
         try:
-            data=pull_json(end_cursor)
+            data=pull_json(end_cursor,location)
         except:
             print('waiting........')
             wrong+=1
