@@ -59,14 +59,14 @@ def main(argv):
             continue
 
         end_cursor=data['page_info']['end_cursor']
-        with open('cursor.txt', "w") as output:
+        with open(path+'cursor.txt', "w") as output:
                     output.write(str(end_cursor))
     #     break
         if(len(posts)>=ctr):
             ctr+=500
             if(ctr>500):
-                os.remove(last)
-            with open(location+'_'+date1.replace('/','-')+'_'+date2.replace('/','-')+'_'+end_cursor+'.txt', "w") as output:
+                os.remove(path+last)
+            with open(path+location+'_'+date1.replace('/','-')+'_'+date2.replace('/','-')+'_'+end_cursor+'.txt', "w") as output:
                     output.write("posts="+str(posts))
             last=location+'_'+date1.replace('/','-')+'_'+date2.replace('/','-')+'_'+end_cursor+'.txt'
             
@@ -76,7 +76,7 @@ def main(argv):
         print("Not Exited Succesfully IP BAN.. couldnt scrape more, scraped"+str(len(posts))+" posts ")
         return
     
-    with open(location+'_'+date1.replace('/','-')+'_'+date2.replace('/','-')+'_'+end_cursor+'.txt', "w") as output:
+    with open(path+location+'_'+date1.replace('/','-')+'_'+date2.replace('/','-')+'_'+end_cursor+'.txt', "w") as output:
                     output.write("posts="+str(posts))
     
     print("Done.... scraped "+str(len(posts))+" posts ")
