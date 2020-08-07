@@ -72,7 +72,7 @@ def main(argv):
             
         print(len(posts),end_cursor)
     
-    if(wrong>=30):
+    if(wrong>=20):
         print("Not Exited Succesfully IP BAN.. couldnt scrape more, scraped"+str(len(posts))+" posts ")
         return
     
