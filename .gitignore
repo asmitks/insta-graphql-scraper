@@ -1,4 +1,5 @@
 posts.txt
 cursor.txt
-__pycahche__/
-ipynb_checkpoints/
+.ipynb_checkpoints
+__pycache__/
+try.ipynb

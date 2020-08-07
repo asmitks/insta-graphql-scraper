@@ -4,6 +4,7 @@ import sys
 from metros import metro
 import dateToId
 import os
+path='gdrive/My Drive/insta_data/'
 def pull_json(end_cursor):
     try:
         URL='https://www.instagram.com/explore/locations/204517928/chicago-illinois/?__a=1&max_id='+end_cursor
@@ -44,7 +45,6 @@ def main(argv):
     while(end_cursor and wrong<20 and end_cursor>maxid2):
         try:
             data=pull_json(end_cursor)
-            wrong=0
         except:
             print('waiting........')
             wrong+=1
@@ -52,7 +52,6 @@ def main(argv):
             continue
         try:
             posts.extend(data['edges'])
-            wrong=0
         except:
             print('waiting........ couldnt find edges in data make sure end_cursor is correct if passed')
             wrong+=1
@@ -74,7 +73,7 @@ def main(argv):
         print(len(posts),end_cursor)
     
     if(wrong>=30):
-        print("Not Exited Succesfully.. couldnt scrape more, scraped"+str(len(posts))+" posts ")
+        print("Not Exited Succesfully IP BAN.. couldnt scrape more, scraped"+str(len(posts))+" posts ")
         return
     
     with open(location+'_'+date1.replace('/','-')+'_'+date2.replace('/','-')+'_'+end_cursor+'.txt', "w") as output:
