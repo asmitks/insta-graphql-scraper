@@ -11,7 +11,7 @@ import requests
 
 import dateToId
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.WARNING)
 METRO = json.load(open("./metros.json"))
 PATH = os.environ['GDRIVE']
 BASE_URL = "https://www.instagram.com/explore/locations/{location_id}/{location_name}/?__a=1&max_id={max_id}"
@@ -24,6 +24,7 @@ def pull_json(location_name, end_cursor):
 	try:
 		URL = BASE_URL.format(location_name=location_name, location_id=METRO[location_name],
 		                      max_id=end_cursor)
+		logging.debug(URL)
 		r = requests.get(url=URL)
 		if r.status_code == 200:
 			data = r.json()['graphql']['location']['edge_location_to_media']
@@ -76,8 +77,6 @@ def main():
 	parser.add_argument('--restore-cursor', action='store_true', default=False)
 
 	args = parser.parse_args()
-	print(args)
-
 	assert args.location[0] in METRO, 'Location not available in metros.json'
 
 	if args.restore_cursor:
