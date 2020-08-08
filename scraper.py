@@ -2,7 +2,6 @@ import argparse
 import codecs
 import json
 import logging
-import os
 import sys
 from pathlib import Path
 
@@ -11,9 +10,7 @@ import requests
 
 import dateToId
 
-logging.basicConfig(level=logging.WARNING)
-METRO = json.load(open("./metros.json"))
-PATH = os.environ['GDRIVE']
+logging.basicConfig(level=logging.DEBUG)
 BASE_URL = "https://www.instagram.com/explore/locations/{location_id}/{location_name}/?__a=1&max_id={max_id}"
 MAX_TRIES = 11
 
@@ -21,18 +18,15 @@ MAX_TRIES = 11
 @backoff.on_exception(wait_gen=backoff.fibo, max_tries=MAX_TRIES,
                       exception=(requests.exceptions.HTTPError, requests.exceptions.ConnectionError))
 def pull_json(location_name, end_cursor):
-	try:
-		URL = BASE_URL.format(location_name=location_name, location_id=METRO[location_name],
-		                      max_id=end_cursor)
-		logging.debug(URL)
-		r = requests.get(url=URL)
-		if r.status_code == 200:
-			data = r.json()['graphql']['location']['edge_location_to_media']
-			return data
-		else:
-			return None
-	except:
-		return None
+	URL = BASE_URL.format(location_name=location_name, location_id=METRO[location_name],
+	                      max_id=end_cursor)
+	logging.debug(URL)
+	r = requests.get(url=URL)
+	if r.status_code == 200:
+		data = r.json()['graphql']['location']['edge_location_to_media']
+		return data
+	else:
+		raise requests.exceptions.HTTPError
 
 
 def save_jsonl(data, dst='./'):
@@ -66,17 +60,23 @@ def scrape(date1, date2, location, restore_cursor=None):
 			end_cursor = data['page_info']['end_cursor']
 			open(f"{filename}_CURSOR.txt", "w").write(str(end_cursor))
 		else:
-			logging.warning(f'No data found at end_cursor: {end_cursor}')
+			logging.warning(f"No data found at end_cursor: {end_cursor}")
 
 
 def main():
 	parser = argparse.ArgumentParser()
+	parser.add_argument("--dir", nargs=1, default='./data')
 	parser.add_argument("--max", nargs=1, required=True)
 	parser.add_argument("--min", nargs=1, required=True)
 	parser.add_argument("--location", nargs=1, required=True)
 	parser.add_argument('--restore-cursor', action='store_true', default=False)
 
 	args = parser.parse_args()
+	global METRO
+	global PATH
+	PATH = args.dir[0]
+	METRO = json.load(open("./metros.json", 'r'))
+
 	assert args.location[0] in METRO, 'Location not available in metros.json'
 
 	if args.restore_cursor:
@@ -87,6 +87,7 @@ def main():
 		maxid1 = None
 		logging.info(f"Scraping between dates {args.min[0]} and {args.max[0]}")
 
+	logging.info(f"PATH: {PATH}")
 	scrape(args.max[0], args.min[0], args.location[0], maxid1)
 
 
@@ -95,6 +96,5 @@ def test():
 
 
 if __name__ == "__main__":
-	logging.info(f"PATH: {PATH}")
 	main()
 # test()
