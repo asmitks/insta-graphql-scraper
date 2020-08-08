@@ -7,10 +7,10 @@ from pathlib import Path
 
 import backoff
 import requests
+from tqdm import tqdm
 
 import dateToId
 
-logging.basicConfig(level=logging.DEBUG)
 BASE_URL = "https://www.instagram.com/explore/locations/{location_id}/{location_name}/?__a=1&max_id={max_id}"
 MAX_TRIES = 11
 
@@ -52,6 +52,7 @@ def scrape(date1, date2, location, restore_cursor=None):
 	end_cursor = maxid1 if restore_cursor is None else restore_cursor
 	logging.debug(f"end_cursor: {end_cursor}")
 
+	pbar = tqdm(unit='post')
 	while end_cursor and end_cursor > maxid2:
 		data = pull_json(location, end_cursor)
 		if data:
@@ -59,23 +60,30 @@ def scrape(date1, date2, location, restore_cursor=None):
 			save_jsonl(data['edges'], filename + '.jsonl')
 			end_cursor = data['page_info']['end_cursor']
 			open(f"{filename}_CURSOR.txt", "w").write(str(end_cursor))
+			pbar.update(len(data['edges']))
 		else:
 			logging.warning(f"No data found at end_cursor: {end_cursor}")
+	else:
+		pbar.close()
 
 
 def main():
 	parser = argparse.ArgumentParser()
-	parser.add_argument("--dir", nargs=1, default='./data')
+	parser.add_argument("--dir", nargs=1, default=['./data'])
 	parser.add_argument("--max", nargs=1, required=True)
 	parser.add_argument("--min", nargs=1, required=True)
 	parser.add_argument("--location", nargs=1, required=True)
 	parser.add_argument('--restore-cursor', action='store_true', default=False)
+	parser.add_argument('--log-level', type=int, default=20)
 
 	args = parser.parse_args()
 	global METRO
 	global PATH
+	global log
 	PATH = args.dir[0]
 	METRO = json.load(open("./metros.json", 'r'))
+	logging.basicConfig(level=args.log_level)
+	log = logging.getLogger(__name__)
 
 	assert args.location[0] in METRO, 'Location not available in metros.json'
 
