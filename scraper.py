@@ -2,6 +2,7 @@ import argparse
 import codecs
 import json
 import logging
+import os
 import sys
 from pathlib import Path
 
@@ -12,7 +13,7 @@ import dateToId
 
 logging.basicConfig(level=logging.DEBUG)
 METRO = json.load(open("./metros.json"))
-PATH = './data/'
+PATH = os.environ['GDRIVE']
 BASE_URL = "https://www.instagram.com/explore/locations/{location_id}/{location_name}/?__a=1&max_id={max_id}"
 MAX_TRIES = 11
 
@@ -54,31 +55,17 @@ def scrape(date1, date2, location, restore_cursor=None):
 		sys.exit(1)
 
 	end_cursor = maxid1 if restore_cursor is None else restore_cursor
-	logging.debug("end_cursor: ", end_cursor)
+	logging.debug(f"end_cursor: {end_cursor}")
 
 	while end_cursor and end_cursor > maxid2:
 		data = pull_json(location, end_cursor)
-		filename = f"{PATH}/{location}_{date1.replace('/', '-')}_{date2.replace('/', '-')}.jsonl"
-		save_jsonl(data['edges'], filename)
-		end_cursor = data['page_info']['end_cursor']
-		open(PATH + 'cursor.txt', "w").write(str(end_cursor))
-
-
-def main_old(argv):
-	assert len(argv) == 3, 'USAGE: python3 scraper.py <max_date> <min_date> <location>'
-	date1 = argv[0]
-	date2 = argv[1]
-	location = argv[2]
-
-	try:
-		maxid1 = dateToId.run(date1)
-		maxid2 = dateToId.run(date2)
-	except:
-		logging.error("error in date format, make sure no following zeroes example: 2020/7/15")
-		return
-
-	assert location in METRO, 'Location not available in metros.json'
-	scrape(maxid1, maxid2, location)
+		if data:
+			filename = f"{PATH}/{location}_{date1.replace('/', '-')}_{date2.replace('/', '-')}"
+			save_jsonl(data['edges'], filename + '.jsonl')
+			end_cursor = data['page_info']['end_cursor']
+			open(f"{filename}_CURSOR.txt", "w").write(str(end_cursor))
+		else:
+			logging.warning(f'No data found at end_cursor: {end_cursor}')
 
 
 def main():
@@ -94,18 +81,21 @@ def main():
 	assert args.location[0] in METRO, 'Location not available in metros.json'
 
 	if args.restore_cursor:
-		logging.warning(f"--max {args.max} will be ignored. Scraping as far back as {args.min}")
-		maxid1 = open(PATH + 'cursor.txt', "r").read()
+		logging.warning(f"--max {args.max[0]} will be ignored. Scraping as far back as {args.min[0]}")
+		filename = f"{PATH}/{args.location[0]}_{args.max[0].replace('/', '-')}_{args.min[0].replace('/', '-')}"
+		maxid1 = open(f"{filename}_CURSOR.txt", "r").read()
 	else:
+		maxid1 = None
 		logging.info(f"Scraping between dates {args.min[0]} and {args.max[0]}")
 
-	scrape(args.max[0], args.min[0], args.location[0])
+	scrape(args.max[0], args.min[0], args.location[0], maxid1)
 
 
 def test():
-	scrape("2020/07/16", "2020/07/15", "New-York-City")
+	scrape("2020/07/16", "2020/07/15", "Memphis")
 
 
 if __name__ == "__main__":
+	logging.info(f"PATH: {PATH}")
 	main()
 # test()
