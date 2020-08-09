@@ -1,5 +1,9 @@
+.DS_Store
 posts.txt
 cursor.txt
-.ipynb_checkpoints
+.ipynb_checkpoints/
 __pycache__/
 try.ipynb
+.idea
+data/
+*.log
