@@ -11,6 +11,7 @@ from tqdm import tqdm
 
 import dateToId
 
+
 BASE_URL = "https://www.instagram.com/explore/locations/{location_id}/?__a=1&max_id={max_id}"
 MAX_TRIES = 11
 
@@ -111,4 +112,4 @@ def test():
 
 if __name__ == "__main__":
 	main()
-# test()
+# 
