@@ -1,7 +1,22 @@
-## Usage
+Instagram Graphql Scraper
+=================
+[![PyPI](https://img.shields.io/pypi/v/instagram-scraper.svg)](https://pypi.python.org/pypi/instagram-scraper)
+Installation
+-------
+To install insta-graphql--scraper:
+```bash
+$ pip install insta-graphql-scraper
 
 ```
-python scraper.py [-h] [--dir DIR] --max MAX_DATE --min MIN_DATE --location LOCATION
+To update insta-graphql-scraper:
+```bash
+$ pip install insta-graphql-scraper --upgrade
+```
+
+## Usage
+
+```bash
+$ python scraper.py [-h] [--dir DIR] --max MAX_DATE --min MIN_DATE --location LOCATION
                   [--restore-cursor] [--log-level LOG_LEVEL]
 ```
 
