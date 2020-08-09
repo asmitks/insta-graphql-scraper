@@ -1,6 +1,9 @@
 Instagram Graphql Scraper
 =================
 [![PyPI](https://img.shields.io/pypi/v/instagram-scraper.svg)](https://pypi.python.org/pypi/instagram-scraper)
+
+instagram-graphql-scraper is a command-line application written in Python that scrapes posts and complete metadata(caption, image-link, description, time-stamp, location), from instagram's explore location page. The novelty lies in the option to provide min and max date, hence giving an option to scrape old posts as well.
+
 Installation
 -------
 To install insta-graphql--scraper:
