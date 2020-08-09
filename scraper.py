@@ -11,15 +11,14 @@ from tqdm import tqdm
 
 import dateToId
 
-BASE_URL = "https://www.instagram.com/explore/locations/{location_id}/{location_name}/?__a=1&max_id={max_id}"
+BASE_URL = "https://www.instagram.com/explore/locations/{location_id}/?__a=1&max_id={max_id}"
 MAX_TRIES = 11
 
 
 @backoff.on_exception(wait_gen=backoff.fibo, max_tries=MAX_TRIES,
                       exception=(requests.exceptions.HTTPError, requests.exceptions.ConnectionError))
 def pull_json(location_name, end_cursor):
-	URL = BASE_URL.format(location_name=location_name, location_id=METRO[location_name],
-	                      max_id=end_cursor)
+	URL = BASE_URL.format(location_id=METRO[location_name], max_id=end_cursor)
 	logging.debug(URL)
 	r = requests.get(url=URL)
 	if r.status_code == 200:
@@ -100,6 +99,13 @@ def main():
 
 
 def test():
+	global METRO
+	global PATH
+	global log
+	PATH = "./data"
+	METRO = json.load(open("./metros.json", 'r'))
+	logging.basicConfig(level=10)
+	log = logging.getLogger(__name__)
 	scrape("2020/07/16", "2020/07/15", "Memphis")
 
 
