@@ -19,7 +19,7 @@ $ pip install insta-graphql-scraper --upgrade
 ## Usage
 
 ```bash
-$ python scraper.py [-h] [--dir DIR] --max MAX_DATE --min MIN_DATE --location LOCATION
+$ scrape [-h] [--dir DIR] --max MAX_DATE --min MIN_DATE --location LOCATION
                   [--restore-cursor] [--log-level LOG_LEVEL]
 ```
 
