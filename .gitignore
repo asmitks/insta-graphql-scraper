@@ -2,7 +2,7 @@
 posts.txt
 cursor.txt
 .ipynb_checkpoints/
-__pycache__/
+__pycache__
 try.ipynb
 .idea
 data/
