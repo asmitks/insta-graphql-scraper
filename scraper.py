@@ -21,7 +21,7 @@ MAX_TRIES = 11
 def pull_json(location_name, end_cursor):
 	URL = BASE_URL.format(location_id=METRO[location_name], max_id=end_cursor)
 	logging.debug(URL)
-	r = requests.get(url=URL)
+	r = requests.get(url=URL, headers = {'User-agent': 'your bot 0.1')
 	if r.status_code == 200:
 		data = r.json()['graphql']['location']['edge_location_to_media']
 		return data
